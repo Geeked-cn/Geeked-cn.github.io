@@ -194,10 +194,15 @@ while ($true) {
 
         $display = if ($app) { Get-DisplayName $app } else { "空闲" }
 
-        $elapsed = ($now - $lastTick).TotalSeconds
+$elapsed = ($now - $lastTick).TotalSeconds
         if ($elapsed -gt 0 -and $elapsed -lt 60) {
-            if (-not $state.usage.ContainsKey($currentApp)) { $state.usage[$currentApp] = 0 }
-            $state.usage[$currentApp] = [double]$state.usage[$currentApp] + $elapsed
+            $usage = $state.usage
+            $existingNames = @($usage.PSObject.Properties.Name)
+            if ($existingNames -notcontains $currentApp) {
+                $usage | Add-Member -NotePropertyName $currentApp -NotePropertyValue 0.0
+            }
+            $currentValue = [double]($usage.$currentApp)
+            $usage.$currentApp = $currentValue + $elapsed
         }
         $lastTick = $now
 
