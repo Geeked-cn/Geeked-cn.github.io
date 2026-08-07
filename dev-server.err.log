@@ -1,0 +1,27 @@
+Browserslist: browsers data (caniuse-lite) is 18 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+17:48:00 [ERROR] [UnknownFilesystemError] 
+  Hint:
+    It can be caused by many things, eg. missing permissions or a file not existing we attempt to read. Check the error cause for more details.
+  Error reference:
+    https://docs.astro.build/en/reference/errors/unknown-filesystem-error/
+  Stack trace:
+    at F:\astro\fuwari-main\node_modules\.pnpm\astro@5.13.10_@types+node@24.5.2_jiti@1.21.7_lightningcss@1.29.3_rollup@2.79.2_sass@1.80.4_st_s7hqsa4qywm5m5vu4ywkwg7ioa\node_modules\astro\dist\content\mutable-data-store.js:337:13
+    [...] See full stack trace in the browser, or rerun with --verbose.
+  Caused by:
+  ENOENT: no such file or directory, rename 'F:\astro\fuwari-main\.astro\data-store.json.tmp' -> 'F:\astro\fuwari-main\.astro\data-store.json'
+    at async Object.rename (node:internal/fs/promises:785:10)
+    [...] See full stack trace in the browser, or rerun with --verbose.
+18:04:21 [ERROR] [UnknownFilesystemError] 
+  Hint:
+    It can be caused by many things, eg. missing permissions or a file not existing we attempt to read. Check the error cause for more details.
+  Error reference:
+    https://docs.astro.build/en/reference/errors/unknown-filesystem-error/
+  Stack trace:
+    at F:\astro\fuwari-main\node_modules\.pnpm\astro@5.13.10_@types+node@24.5.2_jiti@1.21.7_lightningcss@1.29.3_rollup@2.79.2_sass@1.80.4_st_s7hqsa4qywm5m5vu4ywkwg7ioa\node_modules\astro\dist\content\mutable-data-store.js:337:13
+    [...] See full stack trace in the browser, or rerun with --verbose.
+  Caused by:
+  EPERM: operation not permitted, rename 'F:\astro\fuwari-main\.astro\data-store.json.tmp' -> 'F:\astro\fuwari-main\.astro\data-store.json'
+    at async Object.rename (node:internal/fs/promises:785:10)
+    [...] See full stack trace in the browser, or rerun with --verbose.
