@@ -3,11 +3,11 @@
     "currentApp":  "Orca",
     "currentSince":  "2026-08-07T21:12:02.6659946+08:00",
     "todayUsage":  {
-                       "Orca":  41.558158399999996,
+                       "Orca":  132.4209658,
                        "空闲":  0.0069536
                    },
     "sessionStart":  "2026-08-07T21:04:11+08:00",
-    "lastUpdate":  "2026-08-07T21:12:02+08:00",
+    "lastUpdate":  "2026-08-07T21:13:33+08:00",
     "machine":  "HUAWEI",
     "running":  true
 }
