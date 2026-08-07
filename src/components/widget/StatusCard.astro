@@ -1,0 +1,143 @@
+---
+import status from "../../data/status.json";
+
+type UsageMap = Record<string, number>;
+
+const todayUsage = (status.todayUsage || {}) as UsageMap;
+const entries = Object.entries(todayUsage).sort((a, b) => b[1] - a[1]);
+const maxTotal = entries.length > 0 ? entries[0][1] : 1;
+
+function fmt(sec: number): string {
+	const h = Math.floor(sec / 3600);
+	const m = Math.floor((sec % 3600) / 60);
+	if (h > 0) return `${h}小时${m}分`;
+	if (m > 0) return `${m}分钟`;
+	return `${Math.round(sec)}秒`;
+}
+
+const lastUpdateMs = status.lastUpdate ? Date.parse(status.lastUpdate) : 0;
+const stale =
+	status.running === false || !lastUpdateMs || Date.now() - lastUpdateMs > 10 * 60 * 1000;
+const currentApp = status.running ? status.currentApp : "监控未运行";
+
+let listHtml = "";
+if (entries.length === 0) {
+	listHtml = '<div class="text-sm text-neutral-500">今日暂无使用记录</div>';
+} else {
+	listHtml = entries
+		.slice(0, 5)
+		.map(([app, sec]) => {
+			const w = Math.max((sec / maxTotal) * 100, 4);
+			return `<div class="flex items-center gap-2 text-sm">
+						<span class="w-20 truncate text-neutral-600 dark:text-neutral-300 shrink-0">${app}</span>
+						<div class="h-2 flex-1 rounded-full bg-[var(--btn-regular-bg)] relative overflow-hidden">
+							<div class="h-full rounded-full bg-[var(--primary)]" style="width: ${w}%"></div>
+						</div>
+						<span class="text-xs text-neutral-500 shrink-0 w-14 text-right">${fmt(sec)}</span>
+					</div>`;
+		})
+		.join("");
+}
+
+const RAW_URL =
+	"https://raw.githubusercontent.com/Geeked-cn/Geeked-cn.github.io/main/src/data/status.json";
+---
+
+<div
+	id="status-card"
+	class="card-base p-3.5 onload-animation"
+	data-raw="https://raw.githubusercontent.com/Geeked-cn/Geeked-cn.github.io/main/src/data/status.json"
+>
+	<div
+		class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-3 mb-2
+		before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+		before:absolute before:left-[-12px] before:top-[5.5px]"
+		>素素客状态</div
+	>
+
+	<div id="status-body">
+		<div class="flex items-center gap-2 mb-1.5">
+			<span
+				id="status-dot"
+				class:list={[
+					"inline-block h-3 w-3 rounded-full",
+					stale ? "bg-neutral-400" : "bg-emerald-500 animate-pulse",
+				]}
+			></span>
+			<span id="status-current" class="font-bold text-neutral-800 dark:text-neutral-100"
+				>{currentApp}</span
+			>
+		</div>
+		<div id="status-update" class="text-xs text-neutral-500 mb-2">素素客状态同步于本机，随时更新</div>
+
+		<div id="status-list" class="flex flex-col gap-1.5" set:html={listHtml}></div>
+	</div>
+</div>
+
+<script>
+	function fmtTime(sec) {
+		sec = Math.round(sec);
+		const h = Math.floor(sec / 3600);
+		const m = Math.floor((sec % 3600) / 60);
+		if (h > 0) return `${h}小时${m}分`;
+		if (m > 0) return `${m}分钟`;
+		return `${sec}秒`;
+	}
+	function fmtClock(iso) {
+		if (!iso) return "尚未运行";
+		const d = new Date(iso);
+		if (isNaN(d.getTime())) return "";
+		const p = (n) => String(n).padStart(2, "0");
+		return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+	}
+	function updateStatus() {
+		const card = document.getElementById("status-card");
+		if (!card) return;
+		const rawUrl = card.dataset.raw;
+		if (!rawUrl) return;
+		fetch(rawUrl, { cache: "no-store" })
+			.then((r) => {
+				if (!r.ok) throw new Error(r.status);
+				return r.json();
+			})
+			.then((s) => {
+				const stale =
+					s.running !== true || Date.now() - Date.parse(s.lastUpdate) > 10 * 60 * 1000;
+				const dot = document.getElementById("status-dot");
+				if (dot) {
+					dot.className =
+						"inline-block h-3 w-3 rounded-full " +
+						(stale ? "bg-neutral-400" : "bg-emerald-500 animate-pulse");
+				}
+				const cur = document.getElementById("status-current");
+				if (cur) cur.textContent = s.currentApp || "空闲";
+				const upd = document.getElementById("status-update");
+				if (upd) upd.textContent = "更新于 " + fmtClock(s.lastUpdate);
+				const list = document.getElementById("status-list");
+				if (!list) return;
+				const usage = Object.entries(s.todayUsage || {})
+					.sort((a, b) => b[1] - a[1])
+					.slice(0, 8);
+				if (usage.length === 0) {
+					list.innerHTML = '<div class="text-sm text-neutral-500">今日暂无使用记录</div>';
+					return;
+				}
+				const maxSec = usage[0][1];
+				list.innerHTML = usage
+					.map(
+						([app, sec]) =>
+							`<div class="flex items-center gap-2">
+								<span class="w-20 truncate text-neutral-600 dark:text-neutral-300 shrink-0">${app}</span>
+								<div class="h-2 flex-1 rounded-full bg-[var(--btn-regular-bg)] relative overflow-hidden">
+									<div class="h-full rounded-full bg-[var(--primary)]" style="width: ${Math.max((sec / maxSec) * 100, 4)}%"></div>
+								</div>
+								<span class="text-xs text-neutral-500 shrink-0 w-14 text-right">${fmtTime(sec)}</span>
+							</div>`,
+					)
+					.join("");
+			})
+			.catch(() => {});
+	}
+	updateStatus();
+	setInterval(updateStatus, 60000);
+</script>

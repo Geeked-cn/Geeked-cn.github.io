@@ -9,6 +9,10 @@ node_modules/
 
 # logs
 *.log
+build-out.txt
+
+# status monitor local state
+status-state.json
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
