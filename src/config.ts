@@ -65,9 +65,9 @@ export const profileConfig: ProfileConfig = {
 			url: "https://twitter.com",
 		},
 		{
-			name: "Steam",
-			icon: "fa6-brands:steam",
-			url: "https://store.steampowered.com",
+			name: "Bilibili",
+			icon: "fa6-brands:bilibili",
+			url: "https://space.bilibili.com/3537109885389592?spm_id_from=333.1007.0.0",
 		},
 		{
 			name: "GitHub",
